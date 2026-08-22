@@ -1,5 +1,4 @@
 import pytest
-import builtins
 
 
 def test_load_words(tmp_path, capsys, _main):

@@ -134,18 +134,22 @@ def print_statistics(score: int, total_time: float) -> None:
     :param score: количество правильных ответов
     :param total_time: общее время игры в секундах
     """
-    if score > 0:
-        avg_time = total_time / score
-        avg_display = f"{avg_time:.2f}"
-    else:
-        avg_display = "—"
-
     # Обратите внимание: «счет» без «ё», чтобы пройти тесты
     print(f"Ваш итоговый счет: {score}")
-    print(
-        f"Время игры: {total_time:.2f} секунд "
-        f"(среднее время: {avg_display} сек.)"
-    )
+
+    if score > 0:
+        avg_time = total_time / score
+        print(
+            f"Время игры: {total_time:.2f} секунд "
+            f"(среднее время: {avg_time:.2f} сек.)"
+        )
+    else:
+        # Когда правильных ответов нет, среднее время — прочерк, 
+        # и «сек.» не пишем
+        print(
+            f"Время игры: {total_time:.2f} секунд "
+            "(среднее время: —)"
+        )
 
 
 def train_until_mistake(words: Dict[str, str]) -> None:
