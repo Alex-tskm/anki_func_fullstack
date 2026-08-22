@@ -22,7 +22,7 @@ def load_words(filename: str = WORDS_FILE) -> Dict[str, str]:
                 if not line:
                     continue
 
-                parts = line.split(",", 1)
+                parts = line.split("|", 1)
                 if len(parts) == 2:
                     word, translation = parts
                     words[word] = translation
@@ -43,7 +43,7 @@ def save_words(words: Dict[str, str], filename: str = WORDS_FILE) -> None:
     count = 0
     with open(filename, "w", encoding="utf-8") as f:
         for word, translation in words.items():
-            f.write(f"{word},{translation}\n")
+            f.write(f"{word}|{translation}\n")
             count += 1
 
     print(f"Было сохранено {count} слов в файл {filename}")
