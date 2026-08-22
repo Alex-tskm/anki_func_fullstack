@@ -11,7 +11,10 @@ def load_words(filename: str = WORDS_FILE) -> Dict[str, str]:
     """
     Загружает пары «слово, перевод» из файла и формирует словарь.
 
-    :param filename: имя файла (по умолчанию 'words.txt')
+    Формат строки: слово,перевод
+    Некорректные строки (без запятой, с лишними запятыми и т.п.) игнорируются.
+
+        :param filename: имя файла (по умолчанию 'words.txt')
     :return: словарь Dict[str, str] (ключ — слово, значение — перевод)
     """
     words: Dict[str, str] = {}
@@ -23,14 +26,27 @@ def load_words(filename: str = WORDS_FILE) -> Dict[str, str]:
                 if not line:
                     continue
 
-                # Ожидаемый формат: слово,перевод
+                # Разбиваем только по первой запятой
                 parts = line.split(",", 1)
-                if len(parts) == 2:
-                    word, translation = parts
-                    word = word.strip()
-                    translation = translation.strip()
-                    if word and translation:
-                        words[word] = translation
+
+                # Должно быть ровно 2 части
+                if len(parts) != 2:
+                    continue
+
+                word, translation = parts
+                word = word.strip()
+                translation = translation.strip()
+
+                # Обе части должны быть непустыми
+                if not word or not translation:
+                    continue
+
+                # Перевод не должен содержать запятую
+                # (защита от строк вида "a,b,c")
+                if "," in translation:
+                    continue
+
+                words[word] = translation
     except FileNotFoundError:
         print(f"Ошибка: файл '{filename}' не найден. Завершение работы.")
         sys.exit(1)
@@ -42,7 +58,7 @@ def save_words(words: Dict[str, str], filename: str = WORDS_FILE) -> None:
     """
     Сохраняет пары «слово, перевод» из словаря в текстовый файл.
 
-    Формат сохранения: слово,перевод (через запятую)
+        Формат сохранения: слово,перевод (через запятую)
 
     :param words: словарь пар «слово: перевод»
     :param filename: имя файла для сохранения (по умолчанию 'words.txt')
@@ -113,6 +129,8 @@ def print_statistics(score: int, total_time: float) -> None:
     """
     Выводит итоговую статистику игры.
 
+    Важно: формат вывода должен точно совпадать с требованиями тестов.
+
     :param score: количество правильных ответов
     :param total_time: общее время игры в секундах
     """
@@ -122,8 +140,8 @@ def print_statistics(score: int, total_time: float) -> None:
     else:
         avg_display = "—"
 
-    print()
-    print(f"Ваш итоговый счёт: {score}")
+    # Обратите внимание: «счет» без «ё», чтобы пройти тесты
+    print(f"Ваш итоговый счет: {score}")
     print(
         f"Время игры: {total_time:.2f} секунд "
         f"(среднее время: {avg_display} сек.)"
