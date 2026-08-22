@@ -4,6 +4,7 @@ import random
 from typing import Dict, Tuple
 
 WORDS_FILE = "words.txt"
+STOP_WORD = "СТОП"
 
 
 def load_words(filename: str = WORDS_FILE) -> Dict[str, str]:
@@ -22,13 +23,17 @@ def load_words(filename: str = WORDS_FILE) -> Dict[str, str]:
                 if not line:
                     continue
 
-                parts = line.split("|", 1)
+                # Ожидаемый формат: слово,перевод
+                parts = line.split(",", 1)
                 if len(parts) == 2:
                     word, translation = parts
-                    words[word] = translation
+                    word = word.strip()
+                    translation = translation.strip()
+                    if word and translation:
+                        words[word] = translation
     except FileNotFoundError:
-        print(f"Ошибка: файл '{filename}' не найден. Создан пустой словарь.")
-        return words
+        print(f"Ошибка: файл '{filename}' не найден. Завершение работы.")
+        sys.exit(1)
 
     return words
 
@@ -37,13 +42,15 @@ def save_words(words: Dict[str, str], filename: str = WORDS_FILE) -> None:
     """
     Сохраняет пары «слово, перевод» из словаря в текстовый файл.
 
+    Формат сохранения: слово,перевод (через запятую)
+
     :param words: словарь пар «слово: перевод»
     :param filename: имя файла для сохранения (по умолчанию 'words.txt')
     """
     count = 0
     with open(filename, "w", encoding="utf-8") as f:
         for word, translation in words.items():
-            f.write(f"{word}|{translation}\n")
+            f.write(f"{word},{translation}\n")
             count += 1
 
     print(f"Было сохранено {count} слов в файл {filename}")
@@ -54,21 +61,20 @@ def add_words(words: Dict[str, str]) -> None:
     Добавляет пары «слово — перевод» в словарь в интерактивном режиме.
 
     Ввод завершается при вводе слова «СТОП»
-    (независимо от регистра и пробелов).1
+    (независимо от регистра и пробелов).
     Словарь изменяется по месту.
 
     :param words: словарь пар «слово: перевод», который дополняется
     """
-    stop_word = "стоп"
     print("Для завершения ввода введите СТОП в качестве слова или перевода.\n")
 
     while True:
         word = input("Введите слово: ").strip()
-        if word.lower() == stop_word:
+        if word.lower() == STOP_WORD.lower():
             break
 
         translation = input("Введите перевод: ").strip()
-        if translation.lower() == stop_word:
+        if translation.lower() == STOP_WORD.lower():
             break
 
         if not word or not translation:
@@ -96,8 +102,7 @@ def ask_and_check(word: str, correct: str) -> Tuple[bool, bool, float]:
     user_answer = input("Ваш перевод: ").strip()
     elapsed = time.time() - start
 
-    stop_word = "стоп"
-    if user_answer.lower() == stop_word:
+    if user_answer.lower() == STOP_WORD.lower():
         return True, False, 0.0
 
     is_correct = user_answer.lower() == correct.lower()

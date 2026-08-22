@@ -1,4 +1,4 @@
-яблоко|apple
-кот|cat
-дом|house
-словарь|dictionary
+яблоко,apple
+кот,cat
+дом,house
+словарь,dictionary
